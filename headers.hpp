@@ -11,6 +11,8 @@ public:
 	Byte(string hex_val);
 	Byte(unsigned char val);
 	Byte byteShift(int shift);
+	Byte ROR(int bits, int shift);
+	Byte ROL(int bits, int shift);
 	Byte operator|(const Byte &byte);
 	Byte operator&(const Byte &byte);
 	Byte operator^(const Byte &byte);
@@ -21,6 +23,7 @@ public:
 	bool operator==(const Byte &byte);
 	Byte& operator=(const Byte &byte);
 	bool getBit(unsigned int pos);
+	unsigned char getValue();
 	void printBits();
 	friend ostream& operator<<(ostream &os, const Byte &byte);
 };
@@ -58,7 +61,7 @@ private:
 public:
 	KeySchedule();
 	KeySchedule(ByteStream bs);
-	Byte find_qvalue(Byte x, vector<vector<Byte>>T);
+	Byte q(Byte x, vector<vector<Byte>>T);
 	Byte q0(Byte x);
 	Byte q1(Byte x);
 	void generateKeys();

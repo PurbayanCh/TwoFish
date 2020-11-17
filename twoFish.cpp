@@ -70,13 +70,14 @@ int main()
 {
 	initialise(KEY_LENGTH);
 	// inputWhitening();
-	Byte x("ff");
-	Byte y("14");
-	ByteStream X({x,y});
-	X.printBits();
-	X.byteStreamShift(2).printBits();
-	X.byteStreamShift(-6).printBits();
-	// KeySchedule ks(M);
+	// Byte x("ff");
+	// Byte y("14");
+	// ByteStream X({x,y});
+	// X.printBits();
+	// X.byteStreamShift(2).printBits();
+	// X.byteStreamShift(-6).printBits();
+	KeySchedule ks(M);
 	// ks.generateKeys();
+	cout<<ks.q0(Byte("89"));
 	return 0;
 }

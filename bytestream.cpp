@@ -29,7 +29,7 @@ ByteStream ByteStream::byteStreamShift(int shift)
 			for(int n = 0; n<ans.num_bytes; n++)
 			{
 				bool LSB = ans.values[n].getBit(0);
-				ans.values[n].byteShift(-1);
+				ans.values[n] = ans.values[n].byteShift(-1);
 				ans.values[n] = ans.values[n]|(Byte(ret_value<<7));
 				ret_value = LSB;
 			}
@@ -43,7 +43,7 @@ ByteStream ByteStream::byteStreamShift(int shift)
 			for(int n = ans.num_bytes-1; n>=0; n--)
 			{
 				bool MSB = ans.values[n].getBit((ans.num_bytes*8)-1);
-				ans.values[n].byteShift(1);
+				ans.values[n] = ans.values[n].byteShift(1);
 				ans.values[n] = ans.values[n]|Byte(ret_value);
 				ret_value = MSB;
 			}
