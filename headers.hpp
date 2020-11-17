@@ -40,6 +40,7 @@ public:
 	ByteStream& operator=(const ByteStream &bs);
 	unsigned int getNumBytes();
 	ByteStream getBytes(unsigned int start, unsigned int end);
+	Byte getByte(unsigned int index);
 	void setBytes(unsigned int start, ByteStream bs);
 	bool getBit(unsigned int pos);
 	void printBits();
@@ -50,8 +51,12 @@ class KeySchedule
 {
 private:
 	ByteStream M;
+	
 	vector<ByteStream>K;
 public:
+	vector<ByteStream> Me;
+	vector<ByteStream> Mo;
+	vector<ByteStream> S;
 	KeySchedule();
 	KeySchedule(ByteStream bs);
 	void generateKeys();

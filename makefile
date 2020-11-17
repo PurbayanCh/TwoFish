@@ -1,4 +1,4 @@
-CC=g++
+CC=g++-9
 
 run: final
 	./final

@@ -19,7 +19,7 @@ void initialise(unsigned int N)
 	// cout<<"Enter the plaintext: ";
 	// cin>>plaintext;
 
-	string key = "zyxw";
+	string key = "1234567890abcdef";
 	// cout<<"Enter the key: ";
 	// cin>>key;
 
@@ -68,10 +68,13 @@ void inputWhitening()
 
 int main()
 {
-	// initialise(KEY_LENGTH);
+	initialise(KEY_LENGTH);
 	// inputWhitening();
-	Byte x("ff");
-	Byte y("14");
-	ByteStream X({x,y});
+	// Byte x("ff");
+	// Byte y("14");
+	// ByteStream X({x,y});
+	cout<<M<<endl;
+	KeySchedule ks(M);
+	ks.generateKeys();
 	return 0;
 }
