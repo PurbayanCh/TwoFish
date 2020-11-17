@@ -6,7 +6,6 @@ using namespace std;
 #define KEY_LENGTH 128
 #define word(x, i) x.getBytes(4*i, 4*i+4)
 
-vector<Byte>freeBytes;
 vector<vector<Byte>>RS;
 vector<vector<Byte>>MDS;
 
@@ -66,18 +65,22 @@ void inputWhitening()
 	cout<<P<<endl;
 }
 
+void test()
+{
+	Byte w("08");
+	Byte x("ff");
+	Byte y("14");
+	Byte z("43");
+	ByteStream X({w,x,y,z});
+	cout<<h(X,{X,X})<<endl;
+}
+
 int main()
 {
 	initialise(KEY_LENGTH);
 	// inputWhitening();
-	// Byte x("ff");
-	// Byte y("14");
-	// ByteStream X({x,y});
-	// X.printBits();
-	// X.byteStreamShift(2).printBits();
-	// X.byteStreamShift(-6).printBits();
+	test();
 	KeySchedule ks(M);
 	// ks.generateKeys();
-	cout<<ks.q0(Byte("89"));
 	return 0;
 }

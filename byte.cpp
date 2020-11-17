@@ -46,10 +46,13 @@ Byte Byte::byteShift(int shift)
 	return ans;
 }
 
-Byte Byte::ROR(int bits, int shift) {
+Byte Byte::ROR(int bits, int shift) 
+{
 	Byte ans = *this;
-	if(bits == 4) {
-		while(shift--) {
+	if(bits == 4) 
+	{
+		while(shift--) 
+		{
 			bool LSB = ans.getBit(0);
 			ans = ans.byteShift(-1);
 			ans = ans & Byte("0f");
@@ -58,8 +61,10 @@ Byte Byte::ROR(int bits, int shift) {
 		}
 		return ans;
 	}
-	else {
-		while(shift--) {
+	else
+	{
+		while(shift--)
+		{
 			bool LSB = ans.getBit(0);
 			ans = ans.byteShift(-1);
 			string temp = LSB?"80":"00";
@@ -69,10 +74,13 @@ Byte Byte::ROR(int bits, int shift) {
 	}
 }
 
-Byte Byte::ROL(int bits, int shift) {
+Byte Byte::ROL(int bits, int shift) 
+{
 	Byte ans = *this;
-	if(bits == 4) {
-		while(shift--) {
+	if(bits == 4) 
+	{
+		while(shift--)
+		{
 			bool MSB = ans.getBit(3);
 			ans = ans.byteShift(1);
 			ans = ans & Byte("0f");
@@ -81,8 +89,10 @@ Byte Byte::ROL(int bits, int shift) {
 		}
 		return ans;
 	}
-	else {
-		while(shift--) {
+	else
+	{
+		while(shift--)
+		{
 			bool MSB = ans.getBit(7);
 			ans = ans.byteShift(1);
 			string temp = MSB?"01":"00";

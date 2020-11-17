@@ -50,6 +50,11 @@ public:
 	friend ostream& operator<<(ostream &os, const ByteStream &bs);
 };
 
+Byte q(Byte x, vector<vector<Byte>>&T);
+Byte q0(Byte x);
+Byte q1(Byte x);
+ByteStream h(ByteStream x, vector<ByteStream>L);
+
 class KeySchedule
 {
 private:
@@ -61,8 +66,5 @@ private:
 public:
 	KeySchedule();
 	KeySchedule(ByteStream bs);
-	Byte q(Byte x, vector<vector<Byte>>T);
-	Byte q0(Byte x);
-	Byte q1(Byte x);
 	void generateKeys();
 };
