@@ -14,10 +14,11 @@ ByteStream::ByteStream(vector<Byte> val)
 	this->num_bytes = val.size();
 }
 
-void ByteStream::byteStreamShift(int shift)
+ByteStream ByteStream::byteStreamShift(int shift)
 {
+	ByteStream ans = *this;
 	if(shift == 0)
-		return;
+		return ans;
 	bool ret_value;
 	if(shift<0)
 	{
@@ -25,11 +26,11 @@ void ByteStream::byteStreamShift(int shift)
 		while(shift--)
 		{
 			ret_value = 0;
-			for(int n = 0; n<this->num_bytes; n++)
+			for(int n = 0; n<ans.num_bytes; n++)
 			{
-				bool LSB = this->values[n].getBit(0);
-				this->values[n].byteShift(-1);
-				this->values[n] = this->values[n]|(Byte(ret_value<<7));
+				bool LSB = ans.values[n].getBit(0);
+				ans.values[n].byteShift(-1);
+				ans.values[n] = ans.values[n]|(Byte(ret_value<<7));
 				ret_value = LSB;
 			}
 		}
@@ -39,15 +40,16 @@ void ByteStream::byteStreamShift(int shift)
 		while(shift--)
 		{
 			ret_value = 0;
-			for(int n = this->num_bytes-1; n>=0; n--)
+			for(int n = ans.num_bytes-1; n>=0; n--)
 			{
-				bool MSB = this->values[n].getBit((this->num_bytes*8)-1);
-				this->values[n].byteShift(1);
-				this->values[n] = this->values[n]|Byte(ret_value);
+				bool MSB = ans.values[n].getBit((ans.num_bytes*8)-1);
+				ans.values[n].byteShift(1);
+				ans.values[n] = ans.values[n]|Byte(ret_value);
 				ret_value = MSB;
 			}
 		}	
 	}
+	return ans;
 }
 
 ByteStream ByteStream::operator|(const ByteStream &bs)

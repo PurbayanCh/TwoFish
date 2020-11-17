@@ -26,21 +26,23 @@ Byte::Byte(unsigned char val)
 	this->value = val;
 }
 
-void Byte::byteShift(int shift)
+Byte Byte::byteShift(int shift)
 {
+	Byte ans = *this;
 	if(shift == 0)
-		return;
+		return ans;
 	if(shift<0)
 	{
 		shift *= -1;
 		while(shift--)
-			this->value = this->value/2;
+			ans.value = ans.value/2;
 	}
 	else
 	{
 		while(shift--)
-			this->value = 2*this->value;
+			ans.value = 2*ans.value;
 	}
+	return ans;
 }
 
 Byte Byte::operator|(const Byte &byte)

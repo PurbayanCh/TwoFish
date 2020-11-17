@@ -10,7 +10,7 @@ public:
 	Byte();
 	Byte(string hex_val);
 	Byte(unsigned char val);
-	void byteShift(int shift);
+	Byte byteShift(int shift);
 	Byte operator|(const Byte &byte);
 	Byte operator&(const Byte &byte);
 	Byte operator^(const Byte &byte);
@@ -33,7 +33,7 @@ private:
 public:
 	ByteStream();
 	ByteStream(vector<Byte> bs);
-	void byteStreamShift(int shift);
+	ByteStream byteStreamShift(int shift);
 	ByteStream operator|(const ByteStream &bs);
 	ByteStream operator&(const ByteStream &bs);
 	ByteStream operator^(const ByteStream &bs);
@@ -51,13 +51,15 @@ class KeySchedule
 {
 private:
 	ByteStream M;
-	
-	vector<ByteStream>K;
-public:
+	vector<ByteStream> K;
 	vector<ByteStream> Me;
 	vector<ByteStream> Mo;
 	vector<ByteStream> S;
+public:
 	KeySchedule();
 	KeySchedule(ByteStream bs);
+	Byte find_qvalue(Byte x, vector<vector<Byte>>T);
+	Byte q0(Byte x);
+	Byte q1(Byte x);
 	void generateKeys();
 };
