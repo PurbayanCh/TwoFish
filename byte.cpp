@@ -26,6 +26,10 @@ Byte::Byte(unsigned char val)
 	this->value = val;
 }
 
+unsigned char Byte::getValue() {
+	return this->value;
+}
+
 //+ve = left shift; -ve = right shift
 Byte Byte::byteShift(int shift)
 {
@@ -46,7 +50,7 @@ Byte Byte::byteShift(int shift)
 	return ans;
 }
 
-Byte Byte::ROR(int bits, int shift) 
+Byte Byte::byteROR(int bits, int shift) 
 {
 	Byte ans = *this;
 	if(bits == 4) 
@@ -59,7 +63,6 @@ Byte Byte::ROR(int bits, int shift)
 			string temp = LSB?"08":"00";
 			ans = ans | Byte(temp);
 		}
-		return ans;
 	}
 	else
 	{
@@ -70,11 +73,11 @@ Byte Byte::ROR(int bits, int shift)
 			string temp = LSB?"80":"00";
 			ans = ans | Byte(temp);
 		}
-		return ans;
 	}
+	return ans;
 }
 
-Byte Byte::ROL(int bits, int shift) 
+Byte Byte::byteROL(int bits, int shift) 
 {
 	Byte ans = *this;
 	if(bits == 4) 
@@ -87,7 +90,6 @@ Byte Byte::ROL(int bits, int shift)
 			string temp = MSB?"01":"00";
 			ans = ans | Byte(temp);
 		}
-		return ans;
 	}
 	else
 	{
@@ -98,8 +100,8 @@ Byte Byte::ROL(int bits, int shift)
 			string temp = MSB?"01":"00";
 			ans = ans | Byte(temp);
 		}
-		return ans;
 	}
+	return ans;
 }
 
 Byte Byte::operator|(const Byte &byte)
@@ -161,10 +163,6 @@ bool Byte::getBit(unsigned int pos)
 {
 	bool bit = (this->value&(1<<pos));
 	return bit;
-}
-
-unsigned char Byte::getValue() {
-	return this->value;
 }
 
 void Byte::printBits()

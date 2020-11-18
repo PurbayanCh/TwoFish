@@ -10,9 +10,10 @@ public:
 	Byte();
 	Byte(string hex_val);
 	Byte(unsigned char val);
+	unsigned char getValue();
 	Byte byteShift(int shift);
-	Byte ROR(int bits, int shift);
-	Byte ROL(int bits, int shift);
+	Byte byteROR(int bits, int shift);
+	Byte byteROL(int bits, int shift);
 	Byte operator|(const Byte &byte);
 	Byte operator&(const Byte &byte);
 	Byte operator^(const Byte &byte);
@@ -23,7 +24,6 @@ public:
 	bool operator==(const Byte &byte);
 	Byte& operator=(const Byte &byte);
 	bool getBit(unsigned int pos);
-	unsigned char getValue();
 	void printBits();
 	friend ostream& operator<<(ostream &os, const Byte &byte);
 };
@@ -36,7 +36,12 @@ private:
 public:
 	ByteStream();
 	ByteStream(vector<Byte> bs);
+	ByteStream(unsigned int bs);
+	ByteStream(string bs);
+	unsigned int getValue();
 	ByteStream byteStreamShift(int shift);
+	ByteStream byteStreamROR(int shift);
+	ByteStream byteStreamROL(int shift);
 	ByteStream operator|(const ByteStream &bs);
 	ByteStream operator&(const ByteStream &bs);
 	ByteStream operator^(const ByteStream &bs);
@@ -50,21 +55,29 @@ public:
 	friend ostream& operator<<(ostream &os, const ByteStream &bs);
 };
 
-Byte q(Byte x, vector<vector<Byte>>&T);
-Byte q0(Byte x);
-Byte q1(Byte x);
-ByteStream h(ByteStream x, vector<ByteStream>L);
-
-class KeySchedule
+class TwoFish
 {
 private:
 	ByteStream M;
 	vector<ByteStream> K;
-	vector<ByteStream> Me;
-	vector<ByteStream> Mo;
 	vector<ByteStream> S;
-public:
-	KeySchedule();
-	KeySchedule(ByteStream bs);
+
+	vector<vector<Byte>>RS;
+	vector<vector<Byte>>MDS;
+
+	Byte q(Byte x, vector<vector<Byte>>&T);
+	Byte q0(Byte x);
+	Byte q1(Byte x);
+	ByteStream h(ByteStream x, vector<ByteStream>L);
+
+	ByteStream f(ByteStream R0, ByteStream R1, unsigned int r);
+
 	void generateKeys();
+public:
+	TwoFish(string KEY);
+	vector<ByteStream> getKeys();
+	ByteStream inputPreprocessing(string x);
+	ByteStream inputWhitening(ByteStream x);
+	ByteStream encrypt(string plaintext);
+	ByteStream decrypt(string ciphertext);
 };

@@ -3,8 +3,8 @@ CC=g++
 run: final
 	./final
 
-final: byte.o bytestream.o hfunction.o keyschedule.o twoFish.o
-	$(CC) -o final byte.o bytestream.o hfunction.o keyschedule.o twoFish.o
+final: byte.o bytestream.o twofish.o driver.o
+	$(CC) -o final byte.o bytestream.o twofish.o driver.o
 
 byte.o: byte.cpp
 	$(CC) -c byte.cpp
@@ -12,14 +12,11 @@ byte.o: byte.cpp
 bytestream.o: bytestream.cpp
 	$(CC) -c bytestream.cpp
 
-hfunction.o: hfunction.cpp
-	$(CC) -c hfunction.cpp
+twofish.o: twofish.cpp
+	$(CC) -c twofish.cpp
 
-keyschedule.o: keyschedule.cpp
-	$(CC) -c keyschedule.cpp
-
-twoFish.o: twoFish.cpp
-	$(CC) -c twoFish.cpp
+driver.o: driver.cpp
+	$(CC) -c driver.cpp	
 
 clean: 
 	rm -f *.o
