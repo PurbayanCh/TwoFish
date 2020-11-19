@@ -23,6 +23,7 @@ ByteStream::ByteStream(unsigned int bs)
 		unsigned char x = (bs & mask)>>(i-8);
 		bytes.push_back(Byte(x));
 	}
+	reverse(bytes.begin(), bytes.end());
 	this->values = bytes;
 	this->num_bytes = bytes.size();
 }
@@ -166,7 +167,9 @@ ByteStream ByteStream::getBytes(unsigned int start, unsigned int end)
 		bytes.push_back(this->values[i]);
 	return ByteStream(bytes);
 }
-Byte ByteStream::getByte(unsigned int index) {
+
+Byte ByteStream::getByte(unsigned int index) 
+{
 	return this->values[index];
 }
 

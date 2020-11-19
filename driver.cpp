@@ -10,6 +10,7 @@ void test()
 	Byte z("66");
 	ByteStream X({w,x,y,z});
 	X.printBits();
+	cout<<ByteStream(64)<<endl;
 	cout<<X.getString()<<endl;
 }
 
@@ -23,6 +24,5 @@ int main()
 	cin>>MSG;
 	TwoFish tf = TwoFish(KEY);
 	cout<<tf.encrypt(MSG)<<endl;
-	cout<<tf.encrypt(tf.encrypt(MSG).getString()).getString()<<endl;
 	return 0;
 }

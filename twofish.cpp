@@ -15,7 +15,7 @@ Byte TwoFish::q(Byte x, vector<vector<Byte>>&T) {
 	Byte b3 = a2 ^ b2.byteROR(4, 1) ^ (((Byte("08")*a2)) & Byte("0f"));
 	Byte a4 = T[2][a3.getValue()];
 	Byte b4 = T[3][b3.getValue()];
-	Byte y = (Byte(16)*b4) + a4;
+	Byte y = b4.byteShift(4) + a4;
 	return y;
 }
 
@@ -27,7 +27,7 @@ Byte TwoFish::q0(Byte x)
 		{Byte("08"), Byte("01"), Byte("07"), Byte("0d"), Byte("06"), Byte("0f"), Byte("03"), Byte("02"), Byte("00"), Byte("0b"), Byte("05"), Byte("09"), Byte("0e"), Byte("0c"), Byte("0a"), Byte("04")},
 		{Byte("0e"), Byte("0c"), Byte("0b"), Byte("08"), Byte("01"), Byte("02"), Byte("03"), Byte("05"), Byte("0f"), Byte("04"), Byte("0a"), Byte("06"), Byte("07"), Byte("00"), Byte("09"), Byte("0d")},
 		{Byte("0b"), Byte("0a"), Byte("05"), Byte("0e"), Byte("06"), Byte("0d"), Byte("09"), Byte("00"), Byte("0c"), Byte("08"), Byte("0f"), Byte("03"), Byte("02"), Byte("04"), Byte("07"), Byte("01")},
-		{Byte("0d"), Byte("07"), Byte("0f"), Byte("04"), Byte("01"), Byte("02"), Byte("06"), Byte("0e"), Byte("09"), Byte("0b"), Byte("03"), Byte("00"), Byte("08"), Byte("05"), Byte("0c"), Byte("0a")}	
+		{Byte("0d"), Byte("07"), Byte("0f"), Byte("04"), Byte("01"), Byte("02"), Byte("06"), Byte("0e"), Byte("09"), Byte("0b"), Byte("03"), Byte("00"), Byte("08"), Byte("05"), Byte("0c"), Byte("0a")}
 	};
 	return q(x, T);
 }
@@ -68,9 +68,7 @@ ByteStream TwoFish::h(ByteStream x, vector<ByteStream> L)
 	else
 	{
 		for(int i = 0; i<4; i++)
-		{
 			y2[i] = x.getByte(i);
-		}
 	}
 
 	if(k == 4)
@@ -95,11 +93,12 @@ ByteStream TwoFish::h(ByteStream x, vector<ByteStream> L)
 	for(int i = 0; i<4; i++)
 		for(int j = 0; j<4; j++)
 			z[i] = z[i] + this->MDS[i][j]*y[j];
-
+	reverse(z.begin(), z.end());
 	return ByteStream(z);
 }
 
-ByteStream TwoFish::g(ByteStream x) {
+ByteStream TwoFish::g(ByteStream x) 
+{
 	return h(x, this->S);
 }
 
@@ -110,7 +109,7 @@ ByteStream TwoFish::f(ByteStream R0, ByteStream R1, unsigned int r) {
 	long long int k0 = this->K[2*r + 8].getValue();
 	long long int k1 = this->K[2*r + 9].getValue();
 	long long int f0 = (t0 + t1 + k0)%(1LL<<32);
-	long long int f1 = (t0 + t1 + t1 + k1)%(1LL<<32);
+	long long int f1 = (t0 + 2*t1 + k1)%(1LL<<32);
 	ByteStream F0(f0);
 	ByteStream F1(f1);
 	vector<Byte> f;
@@ -122,7 +121,7 @@ ByteStream TwoFish::f(ByteStream R0, ByteStream R1, unsigned int r) {
 }
 
 ByteStream TwoFish::round(ByteStream x, unsigned int r) {
-	ByteStream x0, x1, x2, x3;
+	ByteStream x0, x1, x2, x3, y0, y1, y2, y3;
 	x0 = word(x, 0);
 	x1 = word(x, 1);
 	x2 = word(x, 2);
@@ -131,22 +130,21 @@ ByteStream TwoFish::round(ByteStream x, unsigned int r) {
 	ByteStream output = f(x0, x1, r);
 	ByteStream o0 = word(output, 0);
 	ByteStream o1 = word(output, 1);
-	// x3 = (o0^x3).byteStreamROR(1);
-	// x4 = (o1^(x3.byteStreamROL(1)));
-	x0 = (x2^o0).byteStreamROR(1);
-	x1 = x3.byteStreamROL(1)^o1;
-	x2 = x0;
-	x3 = x1;
+	
+	y0 = x0;
+	y1 = x1;
+	y2 = (x2^o0).byteStreamROR(1);
+	y3 = x3.byteStreamROL(1)^o1;
 
 	vector<Byte> ans;
 	for(int i=0; i<4; i++)
-		ans.push_back(x0.getByte(i));
+		ans.push_back(y0.getByte(i));
 	for(int i=0; i<4; i++)
-		ans.push_back(x1.getByte(i));
+		ans.push_back(y1.getByte(i));
 	for(int i=0; i<4; i++)
-		ans.push_back(x2.getByte(i));
+		ans.push_back(y2.getByte(i));
 	for(int i=0; i<4; i++)
-		ans.push_back(x3.getByte(i));
+		ans.push_back(y3.getByte(i));
 	return ByteStream(ans);
 }
 
@@ -186,21 +184,20 @@ void TwoFish::generateKeys()
 		M_arr[i] = ByteStream({t3, t2, t1, t0});
 	}
 
-	for(int i=0; i<M_arr.size(); i++) {
+	for(int i=0; i<2*k; i++) 
+	{
 		if(i%2==0)
 			Me.push_back(M_arr[i]);
 		else
 			Mo.push_back(M_arr[i]);
 	}
 
-	for(int i=0; i<k; i++) {
+	for(int i=0; i<k; i++) 
+	{
 		vector<Byte> S_arr(4);
 		for(int s = 0; s<4; s++)
-		{
-			for(int j=0; j<8; j++) {
+			for(int j=0; j<8; j++) 
 				S_arr[s] = S_arr[s] + this->RS[s][j]*M.getByte(8*i + j);
-			}
-		}
 		reverse(S_arr.begin(), S_arr.end());
 		this->S.push_back(ByteStream(S_arr));
 	}
@@ -281,6 +278,14 @@ vector<ByteStream> TwoFish::getKeys()
 ByteStream TwoFish::encrypt(string plaintext)
 {
 	ByteStream P = inputPreprocessing(plaintext);
+	for(int i = 0; i<4; i++)
+	{
+		Byte t0 = P.getByte(4*i);
+		Byte t1 = P.getByte(4*i + 1);
+		Byte t2 = P.getByte(4*i + 2);
+		Byte t3 = P.getByte(4*i + 3);
+		P.setBytes(4*i, ByteStream({t3,t2,t1,t0}));
+	}
 	P = this->inputWhitening(P);
 	for(int i=0; i<16; i++) 
 	{
@@ -294,5 +299,5 @@ ByteStream TwoFish::encrypt(string plaintext)
 
 ByteStream TwoFish::decrypt(string ciphertext)
 {
-	
+		
 }
