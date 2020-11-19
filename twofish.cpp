@@ -115,9 +115,9 @@ ByteStream TwoFish::f(ByteStream R0, ByteStream R1, unsigned int r) {
 	ByteStream F1(f1);
 	vector<Byte> f;
 	for(int i=0; i<4; i++)
-		f.push_back(f0.getByte(i));
+		f.push_back(F0.getByte(i));
 	for(int i=0; i<4; i++)
-		f.push_back(f1.getByte(i));
+		f.push_back(F1.getByte(i));
 	return ByteStream(f);
 }
 
@@ -131,8 +131,12 @@ ByteStream TwoFish::round(ByteStream x, unsigned int r) {
 	ByteStream output = f(x0, x1, r);
 	ByteStream o0 = word(output, 0);
 	ByteStream o1 = word(output, 1);
-	x3 = (o0^x3).byteStreamROR(1);
-	x4 = (o1^(x3.byteStreamROL(1)));
+	// x3 = (o0^x3).byteStreamROR(1);
+	// x4 = (o1^(x3.byteStreamROL(1)));
+	x0 = (x2^o0).byteStreamROR(1);
+	x1 = x3.byteStreamROL(1)^o1;
+	x2 = x0;
+	x3 = x1;
 
 	vector<Byte> ans;
 	for(int i=0; i<4; i++)
@@ -216,12 +220,6 @@ void TwoFish::generateKeys()
 		this->K[2*i] = ByteStream(ci);
 		this->K[2*i+1] = (ByteStream(di)).byteStreamROL(9);
 	}
-
-	// for(int i = 0; i<40; i++)
-	// {
-	// 	cout<<"K["<<dec<<setfill('0')<<setw(2)<<i<<"]: ";
-	// 	cout<<this->K[i]<<endl;
-	// }
 }
 
 ByteStream TwoFish::inputPreprocessing(string x)
@@ -280,19 +278,17 @@ vector<ByteStream> TwoFish::getKeys()
 	return this->K;
 }
 
-
-
 ByteStream TwoFish::encrypt(string plaintext)
 {
 	ByteStream P = inputPreprocessing(plaintext);
 	P = this->inputWhitening(P);
-	for(int i=0; i<16; i++) {
+	for(int i=0; i<16; i++) 
+	{
 		P = this->round(P, i);
 		P = this->swap(P);
 	}
 	P = this->swap(P);
-	P = this->outputWhitening(P);
-	
+	P = this->outputWhitening(P);	
 	return P;
 }
 

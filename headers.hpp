@@ -11,6 +11,7 @@ public:
 	Byte(string hex_val);
 	Byte(unsigned char val);
 	unsigned char getValue();
+	string getString();
 	Byte byteShift(int shift);
 	Byte byteROR(int bits, int shift);
 	Byte byteROL(int bits, int shift);
@@ -39,6 +40,7 @@ public:
 	ByteStream(unsigned int bs);
 	ByteStream(string bs);
 	unsigned int getValue();
+	string getString();
 	ByteStream byteStreamShift(int shift);
 	ByteStream byteStreamROR(int shift);
 	ByteStream byteStreamROL(int shift);

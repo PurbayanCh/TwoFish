@@ -47,6 +47,14 @@ unsigned int ByteStream::getValue()
 	return value;
 }
 
+string ByteStream::getString()
+{
+	string ans = "";
+	for(Byte byte: this->values)
+		ans = ans + byte.getString();
+	return ans;
+}
+
 ByteStream ByteStream::byteStreamShift(int shift)
 {
 	ByteStream ans = *this;

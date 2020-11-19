@@ -30,6 +30,13 @@ unsigned char Byte::getValue() {
 	return this->value;
 }
 
+string Byte::getString()
+{
+	string ans = "";
+	ans = ans + (char)this->value;
+	return ans;
+}
+
 //+ve = left shift; -ve = right shift
 Byte Byte::byteShift(int shift)
 {
