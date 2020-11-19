@@ -69,8 +69,11 @@ private:
 	Byte q0(Byte x);
 	Byte q1(Byte x);
 	ByteStream h(ByteStream x, vector<ByteStream>L);
-
+	ByteStream g(ByteStream x);
 	ByteStream f(ByteStream R0, ByteStream R1, unsigned int r);
+
+	ByteStream round(ByteStream x, unsigned int r);
+	ByteStream swap(ByteStream x);
 
 	void generateKeys();
 public:
@@ -78,6 +81,7 @@ public:
 	vector<ByteStream> getKeys();
 	ByteStream inputPreprocessing(string x);
 	ByteStream inputWhitening(ByteStream x);
+	ByteStream outputWhitening(ByteStream x);
 	ByteStream encrypt(string plaintext);
 	ByteStream decrypt(string ciphertext);
 };
