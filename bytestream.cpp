@@ -160,6 +160,11 @@ unsigned int ByteStream::getNumBytes()
 	return this->num_bytes;
 }
 
+vector<Byte> ByteStream::getValues()
+{
+	return this->values;
+}
+
 ByteStream ByteStream::getBytes(unsigned int start, unsigned int end)
 {
 	vector<Byte> bytes;

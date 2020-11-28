@@ -17,12 +17,17 @@ void test()
 int main()
 {
 	// test();
-	string KEY, MSG;
-	cout<<"Enter the Key: ";
-	cin>>KEY;
+	string MSG (16, 'B'), KEY (16,'A');
+	// MSG = "ishan";
+	// KEY = "purbayan";
 	cout<<"Enter the Message: ";
 	cin>>MSG;
+	cout<<"Enter the Key: ";
+	cin>>KEY;
 	TwoFish tf = TwoFish(KEY);
+	cout<<"ENCRYTPION:"<<endl;
 	cout<<tf.encrypt(MSG)<<endl;
+	cout<<"DECRYPTION:"<<endl;
+	cout<<tf.decrypt(tf.encrypt(MSG).getString()).getString()<<endl;
 	return 0;
 }

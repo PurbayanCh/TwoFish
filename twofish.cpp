@@ -49,6 +49,10 @@ ByteStream TwoFish::h(ByteStream x, vector<ByteStream> L)
 {
 	unsigned int k = L.size();
 
+	vector<Byte> x_dash = x.getValues();
+	reverse(x_dash.begin(), x_dash.end());
+	x = ByteStream(x_dash);
+
 	vector<Byte>y2(4, 0);
 	vector<Byte>y3(4, 0);
 	vector<Byte>y4(4, 0);
@@ -73,26 +77,26 @@ ByteStream TwoFish::h(ByteStream x, vector<ByteStream> L)
 
 	if(k == 4)
 	{
-		y3[0] = q1(y4[0])^L[3].getByte(0);
-		y3[1] = q0(y4[1])^L[3].getByte(1);
-		y3[2] = q0(y4[2])^L[3].getByte(2);
-		y3[3] = q1(y4[3])^L[3].getByte(3);
+		y3[0] = q1(y4[0])^L[3].getByte(3);
+		y3[1] = q0(y4[1])^L[3].getByte(2);
+		y3[2] = q0(y4[2])^L[3].getByte(1);
+		y3[3] = q1(y4[3])^L[3].getByte(0);
 	}
 	if(k>=3)
 	{
-		y2[0] = q1(y3[0])^L[2].getByte(0);
-		y2[1] = q1(y3[1])^L[2].getByte(1);
-		y2[2] = q0(y3[2])^L[2].getByte(2);
-		y2[3] = q0(y3[3])^L[2].getByte(3);
+		y2[0] = q1(y3[0])^L[2].getByte(3);
+		y2[1] = q1(y3[1])^L[2].getByte(2);
+		y2[2] = q0(y3[2])^L[2].getByte(1);
+		y2[3] = q0(y3[3])^L[2].getByte(0);
 	}
-	y[0] = q1(q0(q0(y2[0])^L[1].getByte(0))^L[0].getByte(0));
-	y[1] = q0(q0(q1(y2[1])^L[1].getByte(1))^L[0].getByte(1));
-	y[2] = q1(q1(q0(y2[2])^L[1].getByte(2))^L[0].getByte(2));
-	y[3] = q0(q1(q1(y2[3])^L[1].getByte(3))^L[0].getByte(3));
+	y[0] = q1(q0(q0(y2[0])^L[1].getByte(3))^L[0].getByte(3));
+	y[1] = q0(q0(q1(y2[1])^L[1].getByte(2))^L[0].getByte(2));
+	y[2] = q1(q1(q0(y2[2])^L[1].getByte(1))^L[0].getByte(1));
+	y[3] = q0(q1(q1(y2[3])^L[1].getByte(0))^L[0].getByte(0));
 
 	for(int i = 0; i<4; i++)
 		for(int j = 0; j<4; j++)
-			z[i] = z[i] + this->MDS[i][j]*y[j];
+			z[i] = z[i] ^ this->MDS[i][j].GFMult(y[j],361);
 	reverse(z.begin(), z.end());
 	return ByteStream(z);
 }
@@ -120,7 +124,7 @@ ByteStream TwoFish::f(ByteStream R0, ByteStream R1, unsigned int r) {
 	return ByteStream(f);
 }
 
-ByteStream TwoFish::round(ByteStream x, unsigned int r) {
+ByteStream TwoFish::round(ByteStream x, unsigned int r, char type) {
 	ByteStream x0, x1, x2, x3, y0, y1, y2, y3;
 	x0 = word(x, 0);
 	x1 = word(x, 1);
@@ -133,8 +137,16 @@ ByteStream TwoFish::round(ByteStream x, unsigned int r) {
 	
 	y0 = x0;
 	y1 = x1;
-	y2 = (x2^o0).byteStreamROR(1);
-	y3 = x3.byteStreamROL(1)^o1;
+	if(type == 'e')
+	{
+		y2 = (x2^o0).byteStreamROR(1);
+		y3 = x3.byteStreamROL(1)^o1;
+	}
+	else if(type == 'd')
+	{
+		y2 = x2.byteStreamROL(1)^o0;
+		y3 = (x3^o1).byteStreamROR(1);
+	}
 
 	vector<Byte> ans;
 	for(int i=0; i<4; i++)
@@ -172,7 +184,7 @@ void TwoFish::generateKeys()
 	vector<ByteStream>Me, Mo;
 
 	unsigned int N = this->M.getNumBytes()*8;
-	unsigned int k = N/64;
+	unsigned int k = (N+63)/64;
 	vector<ByteStream> M_arr(2*k);
 
 	for(int i=0; i<2*k; i++) 
@@ -197,7 +209,7 @@ void TwoFish::generateKeys()
 		vector<Byte> S_arr(4);
 		for(int s = 0; s<4; s++)
 			for(int j=0; j<8; j++) 
-				S_arr[s] = S_arr[s] + this->RS[s][j]*M.getByte(8*i + j);
+				S_arr[s] = S_arr[s] ^ this->RS[s][j].GFMult(M.getByte(8*i + j), 333);
 		reverse(S_arr.begin(), S_arr.end());
 		this->S.push_back(ByteStream(S_arr));
 	}
@@ -289,15 +301,48 @@ ByteStream TwoFish::encrypt(string plaintext)
 	P = this->inputWhitening(P);
 	for(int i=0; i<16; i++) 
 	{
-		P = this->round(P, i);
+		P = this->round(P, i, 'e');
 		P = this->swap(P);
 	}
 	P = this->swap(P);
-	P = this->outputWhitening(P);	
+	P = this->outputWhitening(P);
+	for(int i = 0; i<4; i++)
+	{
+		Byte t0 = P.getByte(4*i);
+		Byte t1 = P.getByte(4*i + 1);
+		Byte t2 = P.getByte(4*i + 2);
+		Byte t3 = P.getByte(4*i + 3);
+		P.setBytes(4*i, ByteStream({t3,t2,t1,t0}));
+	}
 	return P;
 }
 
 ByteStream TwoFish::decrypt(string ciphertext)
 {
-		
+	ByteStream P = inputPreprocessing(ciphertext);
+	for(int i = 0; i<4; i++)
+	{
+		Byte t0 = P.getByte(4*i);
+		Byte t1 = P.getByte(4*i + 1);
+		Byte t2 = P.getByte(4*i + 2);
+		Byte t3 = P.getByte(4*i + 3);
+		P.setBytes(4*i, ByteStream({t3,t2,t1,t0}));
+	}
+	P = this->outputWhitening(P);
+	for(int i=0; i<16; i++) 
+	{
+		P = this->round(P, 15-i, 'd');
+		P = this->swap(P);
+	}
+	P = this->swap(P);
+	P = this->inputWhitening(P);
+	for(int i = 0; i<4; i++)
+	{
+		Byte t0 = P.getByte(4*i);
+		Byte t1 = P.getByte(4*i + 1);
+		Byte t2 = P.getByte(4*i + 2);
+		Byte t3 = P.getByte(4*i + 3);
+		P.setBytes(4*i, ByteStream({t3,t2,t1,t0}));
+	}
+	return P;
 }

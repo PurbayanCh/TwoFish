@@ -24,6 +24,7 @@ public:
 	bool operator>=(const Byte &byte);
 	bool operator==(const Byte &byte);
 	Byte& operator=(const Byte &byte);
+	Byte GFMult(Byte B, unsigned int modulus);
 	bool getBit(unsigned int pos);
 	void printBits();
 	friend ostream& operator<<(ostream &os, const Byte &byte);
@@ -49,6 +50,7 @@ public:
 	ByteStream operator^(const ByteStream &bs);
 	ByteStream& operator=(const ByteStream &bs);
 	unsigned int getNumBytes();
+	vector<Byte> getValues();
 	ByteStream getBytes(unsigned int start, unsigned int end);
 	Byte getByte(unsigned int index);
 	void setBytes(unsigned int start, ByteStream bs);
@@ -73,11 +75,10 @@ private:
 	ByteStream h(ByteStream x, vector<ByteStream>L);
 	ByteStream g(ByteStream x);
 	ByteStream f(ByteStream R0, ByteStream R1, unsigned int r);
-
-	ByteStream round(ByteStream x, unsigned int r);
+	ByteStream round(ByteStream x, unsigned int r, char type);
 	ByteStream swap(ByteStream x);
-
 	void generateKeys();
+
 public:
 	TwoFish(string KEY);
 	vector<ByteStream> getKeys();

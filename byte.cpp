@@ -166,6 +166,29 @@ Byte& Byte::operator=(const Byte &byte)
 	return *this;
 }
 
+Byte Byte::GFMult(Byte B, unsigned int modulus)
+{
+	unsigned int x = 0;
+	unsigned int a = this->value, b = B.getValue();
+	while(a)
+	{
+		if(a&1)
+			x^=b;
+		b<<=1;
+		a>>=1;
+	}
+	unsigned int y;
+	modulus <<= 7;
+	for(int i = 0; i<8; i++)
+	{
+		y = x^modulus;
+		if(y<x)
+			x = y;
+		modulus>>=1;
+	}
+	return Byte((unsigned char)x);
+}
+
 bool Byte::getBit(unsigned int pos)
 {
 	bool bit = (this->value&(1<<pos));
